@@ -23,7 +23,12 @@ async function run() {
 
         const productCollection = client.db('repliq').collection('products')
         
-        app.get()
+        app.get('/products', async(req, res)=>{
+            const query = {}
+            const cursor = productCollection.find(query)
+            const product = await cursor.toArray()
+            res.send(product)
+        })
 
 
     }
