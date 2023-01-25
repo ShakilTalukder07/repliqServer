@@ -65,6 +65,13 @@ async function run() {
             res.send(orders)
         });
 
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(filter);
+            res.send(result);
+        });
+
         app.post('/customers', async (req, res) => {
             const users = req.body
             const result = await customersCollection.insertOne(users)
@@ -80,18 +87,24 @@ async function run() {
         });
 
 
-        app.get('/customer', async (req, res) => {
-            const query = { role: "customer" }
-            const user = await customersCollection.find(query).toArray()
-            res.send(user)
-        });
+        app.get('/customers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await usersCollection.findOne(query)
+            if (query) {
+                res.send(result)
+            }
+        })
 
 
-        app.get('/customer', async (req, res) => {
-            const query = { role: "admin" }
-            const user = await customersCollection.find(query).toArray()
-            res.send(user)
-        });
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await customersCollection.findOne(query)
+            if (query) {
+                res.send(result)
+            }
+        })
 
 
     }
