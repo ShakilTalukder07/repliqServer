@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
@@ -22,13 +22,61 @@ async function run() {
     try {
 
         const productCollection = client.db('repliq').collection('products')
-        
-        app.get('/products', async(req, res)=>{
+        const orderCollection = client.db('repliq').collection('orders')
+        const customersCollection = client.db('repliq').collection('customers')
+
+        app.get('/products', async (req, res) => {
             const query = {}
             const cursor = productCollection.find(query)
             const product = await cursor.toArray()
             res.send(product)
-        })
+        });
+
+        app.post('/products', async (req, res) => {
+            const users = req.body
+            const result = await productCollection.insertOne(users)
+            res.send(result)
+        });
+
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const product = await productCollection.findOne(query)
+            res.send(product)
+        });
+
+        app.get('/checkout/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const product = await productCollection.findOne(query)
+            res.send(product)
+        });
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
+        });
+
+        app.get('/orders', async (req, res) => {
+            const query = {}
+            const cursor = orderCollection.find(query)
+            const orders = await cursor.toArray()
+            res.send(orders)
+        });
+
+        app.post('/allCustomer', async (req, res) => {
+            const users = req.body
+            const result = await customersCollection.insertOne(users)
+            res.send(result)
+        });
+
+
+        app.get('/allCustomer', async (req, res) => {
+            const query = { role: "customer" }
+            const user = await customersCollection.find(query).toArray()
+            res.send(user)
+        });
 
 
     }
