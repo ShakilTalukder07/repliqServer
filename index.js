@@ -65,15 +65,30 @@ async function run() {
             res.send(orders)
         });
 
-        app.post('/allCustomer', async (req, res) => {
+        app.post('/customers', async (req, res) => {
             const users = req.body
             const result = await customersCollection.insertOne(users)
             res.send(result)
         });
+        
+
+        app.get('/customers', async (req, res) => {
+            const query = {}
+            const cursor = customersCollection.find(query)
+            const orders = await cursor.toArray()
+            res.send(orders)
+        });
 
 
-        app.get('/allCustomer', async (req, res) => {
+        app.get('/customer', async (req, res) => {
             const query = { role: "customer" }
+            const user = await customersCollection.find(query).toArray()
+            res.send(user)
+        });
+
+
+        app.get('/customer', async (req, res) => {
+            const query = { role: "admin" }
             const user = await customersCollection.find(query).toArray()
             res.send(user)
         });
